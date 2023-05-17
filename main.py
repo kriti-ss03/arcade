@@ -1,61 +1,51 @@
-from turtle import Turtle,Screen
+from turtle import Turtle, Screen
+from snake import Snake
+from food import Food
+from scoreboard import Score
 import random
 import time
 
-screen=Screen()
-screen.screensize(600,600)
+screen = Screen()
+screen.screensize(600, 600)
 screen.bgcolor("black")
 
-def u():
-    for t in wturtle:
-        t.setheading(270)
-        t.fd(10)
-        t.speed("fastest")
+s = Snake()
+food=Food()
+score=Score()
 
-def d():
-    for t in wturtle:
-        t.setheading(90)
-        t.fd(10)
+# screen.update()
+screen.onkey(s.up, "w")
+screen.onkey(s.down, "s")
+screen.onkey(s.left, "a")
+screen.onkey(s.right, "d")
 
-wturtle=[]
-start_pos=[(0,0),(-20,0),(-40,0)]
+screen.listen()
+screen.onkey(s.up, "Up")
+screen.onkey(s.down, "Down")
+screen.onkey(s.left, "Left")
+screen.onkey(s.right, "Right")
 
-
-for pos in start_pos:
-    t=Turtle(shape="square")
-    t.color("white")
-    t.penup()
-    wturtle.append(t)
-    t.goto(pos)
-
-
-
-# MOVING FIRST FIRST
-# game_on=True
-# while game_on:
-#     for w in wturtle:
-#         w.fd(10)
-
-
-game_on=True
+game_on = True
 while game_on:
     # update-> show only once every seg has moved
     screen.update()
-    # package to see motion
+    # package to see motion--slows motion,can show movt of head,add of seg if delayed very much
     time.sleep(0.01)
+    s.move()
+    if s.head.distance(food) < 15:
+        # print("chop")
+        food.refresh()
+        s.extend()
+        score.update()
+    if s.head.xcor()>300 or s.head.xcor()<-300 or s.head.ycor()>290 or s.head.ycor()<-290:
+        game_on=False
+        score.game_over()
 
-    # LOOP FROM BACK(st,end,moveby) n then moving FIRST
-    for seg in range(len(wturtle)-1,0,-1):
-        new_x=wturtle[seg-1].xcor()
-        new_y=wturtle[seg-1].ycor()
-        wturtle[seg].goto(new_x,new_y)
-
-    wturtle[0].fd(20)
-    wturtle[0].left(90)
-
-screen.onkey(u,"Up")
-screen.onkey(d,"Down")
-screen.listen()
+#     detect colls with head
+    for ele in s.wturtle[1:]:
+       if s.head.distance(ele) < 10:
+            game_on = False
+            score.game_over()
 
 
 screen.exitonclick()
